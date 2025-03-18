@@ -1,5 +1,24 @@
-Langkah-langkah Melakukan Penginstalan
-- Jalankan install_requirements.bat untuk menginstal dependensi yang diperlukan.
-- Jika proses instalasi berhasil, jalankan database_manager.bat, lalu pilih opsi Setup Database Baru.
-- Setelah database berhasil disiapkan, jalankan run_app.bat.
-- Setelah aplikasi berjalan, klik tautan yang muncul untuk mengaksesnya melalui browser.
+====================================
+          Installation Guide
+====================================
+
+Follow these steps to install and run the application:
+
+1. Install Dependencies
+   - Run the following script to install all required dependencies:
+     install_requirements.bat
+
+2. Setup the Database
+   - Run the database manager script:
+     database_manager.bat
+   - Select the option "Setup New Database"
+
+3. Run the Application
+   - Start the application by executing:
+     run_app.bat
+
+4. Access the Application
+   - Once the application is running, click on the generated link to open it in your browser.
+
+------------------------------------------------------
+For troubleshooting or additional configurations, refer to the documentation.
