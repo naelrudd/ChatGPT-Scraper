@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+:root[data-theme="light"] {
+    --bg-color: #ffffff;
+    --card-bg: #f8f9fa;
+    --text-color: #212529;
+    --border-color: #dee2e6;
+    --message-user-bg: #f1f3f5;
+    --message-assistant-bg: #e9ecef;
+    --text-muted: rgba(0, 0, 0, 0.6);
+    --link-color: #0d6efd;
+    --header-border: rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme="dark"] {
+    --bg-color: #313338;
+    --card-bg: #2b2d31;
+    --text-color: #ffffff;
+    --border-color: #404040;
+    --message-user-bg: #2b2d31;
+    --message-assistant-bg: #1e1f22;
+    --text-muted: rgba(255, 255, 255, 0.7);
+    --link-color: #7289da;
+    --header-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Chat Bubbles Styling */
+.chat-thread {
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+.chat-message {
+    position: relative;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 15px;
+    width: 100%;
+    color: var(--text-color);
+}
+
+.user-message {
+    background-color: var(--message-user-bg);
+    border-bottom-left-radius: 5px;
+}
+
+.assistant-message {
+    background-color: var(--message-assistant-bg);
+    border-bottom-right-radius: 5px;
+}
+
+.message-header {
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--header-border);
+}
+
+.message-icon {
+    margin-right: 0.5rem;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    color: var(--link-color);
+}
+
+.message-label {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.message-number {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.message-content {
+    white-space: pre-wrap;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-color);
+    text-indent: 0;
+}
+
+/* Card Styling */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    color: var(--text-color);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* History List Styling */
+.history-list-item {
+    background-color: var(--message-user-bg);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.history-list-item:hover {
+    background-color: var(--message-assistant-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-color: var(--link-color);
+}
+
+.history-list-item.active {
+    background-color: var(--link-color);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.history-list-item.active a,
+.history-list-item.active .text-muted,
+.history-list-item.active .chat-number {
+    color: #ffffff !important;
+}
+
+.history-list-item a {
+    transition: all 0.3s ease;
+}
+
+.history-list-item:hover a {
+    color: var(--link-color);
+}
+
+.history-list-item:hover .text-muted {
+    color: var(--link-color) !important;
+    opacity: 0.8;
+}
+
+.chat-number {
+    color: var(--link-color);
+    font-weight: 500;
+}
+
+.timestamp {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* Button Styling */
+.btn-primary {
+    background-color: var(--link-color);
+    border-color: var(--link-color);
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+}
+
+.btn-primary:hover {
+    background-color: var(--link-color);
+    filter: brightness(90%);
+}
+
+.btn-secondary {
+    background-color: var(--message-assistant-bg);
+    border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--message-user-bg);
+    border-color: var(--border-color);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--message-assistant-bg);
+}
+
+/* Text colors */
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--link-color);
+    filter: brightness(90%);
+}
+</style>
+
+<!-- Main Container -->
+<div class="row">
+    <!-- Sidebar - History List -->
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title mb-4">History</h3>
+                
+                <!-- History List -->
+                <div class="history-list">
+                    {% if chats %}
+                        {% for chat in chats %}
+                        <div class="history-list-item {% if selected_chat and selected_chat.id == chat.id %}active{% endif %}">
+                            <!-- Chat Link -->
+                            <a href="{{ url_for('history_detail', chat_id=chat.id) }}" class="text-decoration-none d-block">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="chat-number">#{{ loop.index }}</span>
+                                    <small class="timestamp">{{ chat.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                                </div>
+                            </a>
+                            <!-- External Link -->
+                            <a href="{{ chat.url }}" target="_blank" class="text-decoration-none">
+                                <small class="text-muted">🔗 Link ChatGPT</small>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-muted text-center py-3">
+                            Belum ada history chat
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Navigation -->
+                <a href="{{ url_for('index') }}" class="btn btn-primary mt-3 w-100">Kembali</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content - Chat Details -->
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-body">
+                {% if selected_chat %}
+                    <!-- Header Section -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="card-title mb-0">Chat Detail</h4>
+                        <!-- Action Buttons -->
+                        <div class="btn-group">
+                            <button id="copy-text-btn" class="btn btn-primary btn-sm">
+                                <i class="fas fa-copy"></i> Copy to Clipboard
+                            </button>
+                            <a href="{{ url_for('history_text', chat_id=selected_chat.id) }}" target="_blank" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-external-link-alt"></i> View as Text
+                            </a>
+                        </div>
+                        <span class="timestamp">
+                            {{ selected_chat.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                        </span>
+                    </div>
+                    
+                    <!-- Chat Content -->
+                    {% if selected_chat.prompts %}
+                        {% for prompt in selected_chat.prompts %}
+                        <div class="chat-thread">
+                            <!-- User Message -->
+                            <div class="chat-message user-message">
+                                <div class="message-header">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-user message-icon"></i>
+                                        <span class="message-label">You</span>
+                                        <span class="message-number ms-2">#{{ loop.index }}</span>
+                                    </div>
+                                </div>
+                                <div class="message-content">
+                                    {{ prompt.text }}
+                                </div>
+                            </div>
+
+                            <!-- Assistant Message -->
+                            {% if prompt.responses %}
+                            <div class="chat-message assistant-message">
+                                <div class="message-header">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-robot message-icon"></i>
+                                        <span class="message-label">Assistant</span>
+                                        <span class="message-number ms-2">#{{ loop.index }}</span>
+                                    </div>
+                                </div>
+                                <div class="message-content">
+                                    {{ prompt.responses[0].text }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-muted text-center py-3">
+                            Tidak ada prompt dalam chat ini
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="text-center py-5">
+                        <h4 class="text-muted">Pilih chat dari history untuk melihat detail</h4>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+// Clipboard Copy Functionality
+document.getElementById('copy-text-btn').addEventListener('click', async function() {
+    const chatId = "{{ selected_chat.id }}";
+    
+    try {
+        // Get chat text
+        const response = await fetch(`/history/${chatId}/text`);
+        const text = await response.text();
+        
+        try {
+            // Try modern Clipboard API
+            await navigator.clipboard.writeText(text);
+            alert('Text berhasil disalin ke clipboard!');
+        } catch (err) {
+            console.error('Clipboard API error:', err);
+            
+            // Fallback method
+            const textarea = document.createElement('textarea');
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert('Text berhasil disalin ke clipboard!');
+            } catch (e) {
+                console.error('Fallback copy failed:', e);
+                alert('Gagal menyalin text. Silakan coba copy manual dari tampilan text.');
+            }
+            
+            document.body.removeChild(textarea);
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        alert('Gagal mengambil text!');
+    }
+});
+</script>
+{% endblock %}

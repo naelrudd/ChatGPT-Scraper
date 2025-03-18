@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="home-container">
+    <div class="home-header">
+        <h1 class="text-center mb-0">ChatGPT Scraper</h1>
+    </div>
+    
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form method="POST" action="{{ url_for('index') }}">
+                    <div class="mb-4">
+                        <label for="url" class="form-label">Masukkan URL ChatGPT</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="url" 
+                               name="url" 
+                               placeholder="https://chat.openai.com/share/..." 
+                               required>
+                    </div>
+
+                    <div class="instructions">
+                        <h4>Petunjuk Penggunaan:</h4>
+                        <ul>
+                            <li>Buka percakapan ChatGPT yang ingin disimpan</li>
+                            <li>Klik tombol "Share" di pojok kanan atas percakapan</li>
+                            <li>Salin URL yang muncul dan tempel di form di atas</li>
+                            <li>URL harus dalam format share dari chat.openai.com</li>
+                        </ul>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary px-4 py-2">
+                            Simpan Percakapan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
