@@ -52,8 +52,10 @@ Follow these steps to install and run the application:
 Feel free to fork this project and submit a pull request if you want to contribute!
 
 ## License 📜
-This project is licensed under the MIT License.
+This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.  
+By using this software, you agree to share any modifications or distributions under the same license.  
 
----
+For more details, see the [LICENSE](LICENSE) file.
+
 For troubleshooting or additional configurations, refer to the documentation.
 
