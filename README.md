@@ -28,6 +28,7 @@ Follow these steps to install and run the application:
   ```
 
 ### 2. Setup the Database
+- Make sure MySQL is running before proceeding.
 - If the installation process is successful, run the following script:
   ```
   database_manager.bat
